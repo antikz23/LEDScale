@@ -46,6 +46,8 @@ void setup() {
 }
 
 void loop() {
+  float test;
+  int num;
   //update() should be called at least as often as HX711 sample rate; >10Hz@10SPS, >80Hz@80SPS
   //longer delay in scetch will reduce effective sample rate (be carefull with delay() in loop)
   LoadCell.update();
@@ -59,54 +61,63 @@ void loop() {
     Serial.print("      Load_cell calFactor: ");
     Serial.println(v);
     t = millis();
-  }
+    Serial.println(i);
+    if (Serial.available() > 0) {
+      char inByte = Serial.read();
+      if (inByte == 'l') i = -1.0;
+      else if (inByte == 'L') i = -10.0;
+      else if (inByte == 'h') i = 1.0;
+      else if (inByte == 'H') i = 10.0;
+      else if (inByte == 't') LoadCell.tareNoDelay();
+      if (i != 't') {
+        float v = LoadCell.getCalFactor() + i;
+        LoadCell.setCalFactor(v);
+      }
+    }
+    Serial.println(i);
+    test = i * 100;
+    num = (int)test;
+    Serial.println(num);
+    delay(100);
+    if ((i * 100) >= 100.00)
+    {
+      analogWrite(10, 255);
+      analogWrite(11, 0);
+      analogWrite(9, 0);
+      delay(100);
+      Serial.println("blue");
+    }
+    else if (.75 < (i * 100) < 100.00)
+    {
+      analogWrite(10, 0);
+      analogWrite(11, 255);
+      analogWrite(9, 0);
+      delay(100);
+      Serial.println("green");
+    }
+    else if (10 < (i * 100) < 75)
+    {
+      analogWrite(10, 0);
+      analogWrite(11, 0);
+      analogWrite(9, 255);
+      delay(100);
+      Serial.println("red");
+    }
+    else ((i * 100) < 10);
+    {
+      analogWrite(10, 0);
+      analogWrite(11, 0);
+      analogWrite(9, 0);
+      delay(100);
+      Serial.println("off");
+    }
 
-  //receive from serial terminal
-  if (Serial.available() > 0) {
-    char inByte = Serial.read();
-    if (inByte == 'l') i = -1.0;
-    else if (inByte == 'L') i = -10.0;
-    else if (inByte == 'h') i = 1.0;
-    else if (inByte == 'H') i = 10.0;
-    else if (inByte == 't') LoadCell.tareNoDelay();
-    if (i != 't') {
-      float v = LoadCell.getCalFactor() + i;
-      LoadCell.setCalFactor(v);
+
+    //check if last tare operation is complete
+    if (LoadCell.getTareStatus() == true) {
+      Serial.println("Tare complete");
     }
   }
-  if (i >= 1)
-  {
-    analogWrite(10, 255);
-    analogWrite(11, 0);
-    analogWrite(9, 0);
-    Serial.println("blue");
-  }
-  if (.75 < i < 1)
-  {
-    analogWrite(10, 0);
-    analogWrite(11, 255);
-    analogWrite(9, 0);
-    Serial.println("green");
-  }
-  if (0 < i < .75)
-  {
-    analogWrite(10, 0);
-    analogWrite(11, 0);
-    analogWrite(9, 255);
-    Serial.println("red");
-  }
-  if (i <= 0)
-  {
-    analogWrite(10, 0);
-    analogWrite(11, 0);
-    analogWrite(9, 0);
-    Serial.println("off");
-  }
 
-
-  //check if last tare operation is complete
-  if (LoadCell.getTareStatus() == true) {
-    Serial.println("Tare complete");
-  }
 
 }
