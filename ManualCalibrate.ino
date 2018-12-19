@@ -75,11 +75,11 @@ void loop() {
       }
     }
     Serial.println(i);
-    test = i * 100;
+    test = i * 1000;
     num = (int)test;
     Serial.println(num);
     delay(100);
-    if ((i * 100) >= 100.00)
+    if (num >= 1000)
     {
       analogWrite(10, 255);
       analogWrite(11, 0);
@@ -87,7 +87,7 @@ void loop() {
       delay(100);
       Serial.println("blue");
     }
-    else if (.75 < (i * 100) < 100.00)
+    else if ((650 < num) && (num < 1000))
     {
       analogWrite(10, 0);
       analogWrite(11, 255);
@@ -95,7 +95,7 @@ void loop() {
       delay(100);
       Serial.println("green");
     }
-    else if (10 < (i * 100) < 75)
+    else if ((100 < num) && (num < 650))
     {
       analogWrite(10, 0);
       analogWrite(11, 0);
@@ -103,7 +103,7 @@ void loop() {
       delay(100);
       Serial.println("red");
     }
-    else ((i * 100) < 10);
+    else if (num < 100)
     {
       analogWrite(10, 0);
       analogWrite(11, 0);
